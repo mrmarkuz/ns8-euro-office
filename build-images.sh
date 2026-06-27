@@ -46,7 +46,7 @@ buildah config --entrypoint=/ \
     --label="org.nethserver.tcp-ports-demand=1" \
     --label="org.nethserver.rootfull=0" \
 	--label="org.nethserver.min-core=3.12.4-0" \
-    --label="org.nethserver.images=ghcr.io/euro-office/documentserver:v9.3.1" \
+    --label="org.nethserver.images=ghcr.io/euro-office/documentserver:v9.3.2" \
     "${container}"
 # Commit the image
 buildah commit "${container}" "${repobase}/${reponame}"
