@@ -10,12 +10,12 @@ Check if euro-office is installed correctly
     Set Suite Variable    ${module_id}    ${output.module_id}
 
 Check if euro-office can be configured
-    ${rc} =    Execute Command    api-cli run module/${module_id}/configure-module --data '{"host":"euro-office.test.local","http2https": true,"lets_encrypt": false}'
+    ${rc} =    Execute Command    api-cli run module/${module_id}/configure-module --data '{"host":"eurooffice.test.local","http2https": true,"lets_encrypt": false}'
     ...    return_rc=True  return_stdout=False
     Should Be Equal As Integers    ${rc}  0
 
 Check if euro-office works as expected
-    ${rc} =    Execute Command    sleep 20 && curl -H "Host: euro-office.test.local" -fkL https://127.0.0.1/
+    ${rc} =    Execute Command    sleep 10 && curl -H "Host: eurooffice.test.local" -fkL http://127.0.0.1/
     ...    return_rc=True  return_stdout=False
     Should Be Equal As Integers    ${rc}  0
 
