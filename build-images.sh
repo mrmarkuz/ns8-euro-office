@@ -14,14 +14,17 @@ images=()
 repobase="${REPOBASE:-ghcr.io/mrmarkuz}"
 # Configure the image name
 reponame="euro-office"
-
+# Node.js 25+ no longer ships Corepack, install it from npm
+# renovate: datasource=npm packageName=corepack
+corepack_version=0.36.0
 # Create a new empty container image
 container=$(buildah from scratch)
 
 # Reuse existing nodebuilder-euro-office container, to speed up builds
 if ! buildah containers --format "{{.ContainerName}}" | grep -q nodebuilder-euro-office; then
     echo "Pulling NodeJS runtime..."
-    buildah from --name nodebuilder-euro-office -v "${PWD}:/usr/src:Z" docker.io/library/node:lts
+    buildah from --name nodebuilder-euro-office -v "${PWD}:/usr/src:Z" docker.io/library/node:26.13.0-slim
+    buildah run nodebuilder-euro-office sh -c "npm install -g corepack@${corepack_version} && corepack enable"
 fi
 
 echo "Build static UI files with node..."
@@ -29,7 +32,7 @@ buildah run \
     --workingdir=/usr/src/ui \
     --env="NODE_OPTIONS=--openssl-legacy-provider" \
     nodebuilder-euro-office \
-    sh -c "(command -v corepack >/dev/null || npm install -g corepack) && corepack enable && yarn install && yarn build"
+    sh -c "yarn install && yarn build"
 
 # Add imageroot directory to the container image
 buildah add "${container}" imageroot /imageroot
@@ -44,7 +47,7 @@ buildah config --entrypoint=/ \
     --label="org.nethserver.tcp-ports-demand=1" \
     --label="org.nethserver.rootfull=0" \
 	--label="org.nethserver.min-core=3.12.4-0" \
-    --label="org.nethserver.images=ghcr.io/euro-office/documentserver:v9.3.7" \
+    --label="org.nethserver.images=ghcr.io/euro-office/documentserver:v9.3.7-1" \
     "${container}"
 # Commit the image
 buildah commit "${container}" "${repobase}/${reponame}"
