@@ -15,7 +15,7 @@ Check if euro-office can be configured
     Should Be Equal As Integers    ${rc}  0
 
 Check if euro-office works as expected
-    ${rc} =    Execute Command    sleep 10 && curl -H "Host: eurooffice.test.local" -fkL http://127.0.0.1/
+    ${rc} =    Execute Command    sleep 10 && curl --resolve eurooffice.test.local:443:127.0.0.1 -fkL https://eurooffice.test.local
     ...    return_rc=True  return_stdout=False
     Should Be Equal As Integers    ${rc}  0
 
